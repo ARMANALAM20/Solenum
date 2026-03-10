@@ -3,6 +3,7 @@ import { NETWORK_LABELS } from '../utils/solana';
 import type { Network } from '../utils/solana';
 import { useWallet } from '../hooks/useWallet';
 import AccountCard from './AccountCard';
+import SolenumLogo from './SolenumLogo';
 
 interface DashboardProps {
   mnemonic: string;
@@ -23,7 +24,7 @@ export default function Dashboard({ mnemonic, initialNetwork, onLock }: Dashboar
       {/* Top Bar */}
       <header className="dashboard-header">
         <div className="brand">
-          <img src="/solenum.svg" alt="Solenum" className="brand-icon" />
+          <SolenumLogo size={28} className="brand-icon" />
           <span className="brand-name">Solenum</span>
         </div>
 

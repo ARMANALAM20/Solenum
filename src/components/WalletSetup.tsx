@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { generateNewMnemonic, validateMnemonicPhrase, NETWORK_LABELS } from '../utils/solana';
 import type { Network } from '../utils/solana';
+import SolenumLogo from './SolenumLogo';
 
 interface WalletSetupProps {
   onComplete: (mnemonic: string, network: Network) => void;
@@ -44,7 +45,7 @@ export default function WalletSetup({ onComplete }: WalletSetupProps) {
     <div className="setup-container">
       <div className="setup-card">
         <div className="setup-logo">
-          <div className="logo-icon"><img src="/solenum.svg" alt="Solenum" /></div>
+          <div className="logo-icon"><SolenumLogo size={48} /></div>
           <h1 className="logo-title">Solenum</h1>
           <p className="logo-sub">Your Solana Wallet</p>
         </div>
