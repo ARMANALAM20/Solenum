@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { requestAirdrop, shortenAddress } from '../utils/solana';
+import bs58 from 'bs58';
 import type { Network } from '../utils/solana';
 import type { WalletAccount } from '../hooks/useWallet';
 import SendModal from './SendModal';
@@ -28,6 +29,23 @@ export default function AccountCard({
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(account.name);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showPrivKey, setShowPrivKey] = useState(false);
+  const [privKeyRevealed, setPrivKeyRevealed] = useState(false);
+  const [privKeyCopied, setPrivKeyCopied] = useState(false);
+
+  const privateKeyBase58 = bs58.encode(account.keypair.secretKey);
+
+  async function handleCopyPrivKey() {
+    await navigator.clipboard.writeText(privateKeyBase58);
+    setPrivKeyCopied(true);
+    setTimeout(() => setPrivKeyCopied(false), 1500);
+  }
+
+  function handleClosePrivKey() {
+    setShowPrivKey(false);
+    setPrivKeyRevealed(false);
+    setPrivKeyCopied(false);
+  }
 
   async function handleCopy() {
     await navigator.clipboard.writeText(account.publicKey);
@@ -133,6 +151,10 @@ export default function AccountCard({
           )}
         </div>
 
+        <button className="btn-privkey" onClick={() => setShowPrivKey(true)}>
+          🔑 View Private Key
+        </button>
+
         {airdropError && <p className="error-msg mt-sm">{airdropError}</p>}
       </div>
 
@@ -147,6 +169,43 @@ export default function AccountCard({
             setShowSend(false);
           }}
         />
+      )}
+
+      {showPrivKey && (
+        <div className="modal-overlay" onClick={handleClosePrivKey}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Private Key</h2>
+              <button className="modal-close" onClick={handleClosePrivKey}>✕</button>
+            </div>
+
+            <div className="privkey-warning">
+              <span className="privkey-warning-icon">⚠️</span>
+              <p>Never share your private key. Anyone with it has full control of this wallet.</p>
+            </div>
+
+            <div className="privkey-box-wrap">
+              <div className={`privkey-box ${!privKeyRevealed ? 'blurred' : ''}`}>
+                <span className="privkey-text">{privateKeyBase58}</span>
+              </div>
+              {!privKeyRevealed && (
+                <button className="reveal-btn" onClick={() => setPrivKeyRevealed(true)}>
+                  👁 Click to reveal
+                </button>
+              )}
+            </div>
+
+            {privKeyRevealed && (
+              <button className="btn-ghost btn-full" onClick={handleCopyPrivKey}>
+                {privKeyCopied ? '✓ Copied' : 'Copy Private Key'}
+              </button>
+            )}
+
+            <button className="btn-primary btn-full" style={{ marginTop: '0.75rem' }} onClick={handleClosePrivKey}>
+              Done
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
