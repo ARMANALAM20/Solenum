@@ -23,7 +23,7 @@ export default function Dashboard({ mnemonic, initialNetwork, onLock }: Dashboar
       {/* Top Bar */}
       <header className="dashboard-header">
         <div className="brand">
-          <span className="brand-icon">◎</span>
+          <img src="/solenum.svg" alt="Solenum" className="brand-icon" />
           <span className="brand-name">Solenum</span>
         </div>
 

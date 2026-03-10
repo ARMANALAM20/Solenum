@@ -44,7 +44,7 @@ export default function WalletSetup({ onComplete }: WalletSetupProps) {
     <div className="setup-container">
       <div className="setup-card">
         <div className="setup-logo">
-          <div className="logo-icon">◎</div>
+          <div className="logo-icon"><img src="/solenum.svg" alt="Solenum" /></div>
           <h1 className="logo-title">Solenum</h1>
           <p className="logo-sub">Your Solana Wallet</p>
         </div>
