@@ -65,11 +65,30 @@ export async function sendSol(
 
 export async function requestAirdrop(publicKey: string, network: Network): Promise<string> {
   if (network === 'mainnet-beta') throw new Error('Airdrop not available on mainnet');
+
+  // Try the dedicated faucet API first (more reliable than public RPC)
+  if (network === 'devnet') {
+    try {
+      const res = await fetch('https://faucet.solana.com/api/v1/fund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkey: publicKey, lamports: LAMPORTS_PER_SOL }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return data.signature ?? 'airdrop-ok';
+      }
+    } catch {
+      // fall through to RPC airdrop
+    }
+  }
+
+  // Fallback: RPC airdrop
   const connection = new Connection(NETWORKS[network], 'confirmed');
   const pubKey = new PublicKey(publicKey);
   const signature = await connection.requestAirdrop(pubKey, LAMPORTS_PER_SOL);
-  const latestBlockhash = await connection.getLatestBlockhash();
-  await connection.confirmTransaction({ signature, ...latestBlockhash });
+  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+  await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
   return signature;
 }
 

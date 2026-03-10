@@ -60,7 +60,8 @@ export default function AccountCard({
       await requestAirdrop(account.publicKey, network);
       onRefresh(account.publicKey);
     } catch (e: unknown) {
-      setAirdropError(e instanceof Error ? e.message : 'Airdrop failed.');
+      const msg = e instanceof Error ? e.message : 'Airdrop failed.';
+      setAirdropError(`${msg} — try https://faucet.solana.com instead.`);
     } finally {
       setAirdropping(false);
     }
